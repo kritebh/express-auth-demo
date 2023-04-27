@@ -9,15 +9,24 @@ const config ={
     secret:process.env.SECRET,
     baseURL:'http://localhost:3000',
     clientID:process.env.clientID,
-    issuerBaseURL:process.env.ISSUER_BASE_URL
+    issuerBaseURL:process.env.ISSUER_BASE_URL,
+    clientSecret:process.env.CLIENT_SECRET,
+    authorizationParams:{
+        response_type:'code',
+        audience:'localhost:3000',
+        scope:'openid profile email'
+    }
 }
 
 app.use(auth(config))
 
 
 app.get("/",(req,res)=>{
-    console.log(req.oidc.accessToken)
-    res.send(req.oidc.isAuthenticated()?`Name - ${req.oidc.user.nickname} <br> Email - ${req.oidc.user.email}<br> <a href="/logout">Logout</a>`:`<a href="/login">Login<a/>`)
+    const {token_type,access_token} = req.oidc.accessToken
+    if(req.oidc.accessToken){
+        console.log(access_token)
+    }
+    res.send(req.oidc.isAuthenticated()?`${access_token} Name - ${req.oidc.user.nickname} <br> Email - ${req.oidc.user.email}<br> <a href="/logout">Logout</a>`:`<a href="/login">Login<a/>`)
 })
 
 app.get("/protected",requiresAuth(),(req,res)=>{
