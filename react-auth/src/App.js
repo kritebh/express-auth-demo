@@ -11,7 +11,6 @@ function App() {
   const getProtectedRoute = async ()=>{
     try{
       const token = await getAccessTokenSilently()
-      console.log(token)
       let res = await axios.get("http://localhost:8000/protected",{
         headers:{
           Authorization:`Bearer ${token}`

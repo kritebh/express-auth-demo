@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
-const jwt = require('express-jwt')
 const { auth } = require('express-oauth2-jwt-bearer');
+const services = require("./services")
 
 require('dotenv').config()
 app.use(cors())
@@ -18,8 +18,18 @@ app.get("/",(req,res)=>{
     res.json({route:"public"})
 })
 
-app.get("/protected",verifyJWT,(req,res)=>{
-    res.json({route:"private"})
+app.get("/protected",verifyJWT,async (req,res)=>{
+    try{
+        if(!req.auth.token){
+            res.send({message:"unauthorized"})
+        }
+        let userInfo = await services.getUserInfo(req.auth.token);
+        res.send({userInfo:userInfo.data})
+    }
+    catch(error){
+        console.log("hello")
+        console.log(error)
+    }
 })
 
 
